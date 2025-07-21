@@ -1,18 +1,37 @@
 import axios from "axios";
-import { set } from "mongoose";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Spinner from "./Spinner";
 import { ReactSortable } from "react-sortablejs";
+import toast from "react-hot-toast";
 
-export default function Product() {
+export default function Product({
+    _id,
+    Título: existingTítulo,
+    Descripción: existingDescripción,
+    Precio: existingPrecio,
+    Imagenes: existingImagenes,
+    Categoria: existingCategoria,
+}) {
     const [redirect, setRedirect] = useState(false)
     const router = useRouter();
 
-    const [Título, setTitle] = useState('');
-    const [Descripción, setDescription] = useState('');
-    const [Precio, setPrice] = useState('');
-    const [Imagenes, setImages] = useState([]);
+    const [Título, setTitle] = useState(existingTítulo || '');
+    const [Descripción, setDescription] = useState(existingDescripción || '');
+    const [Precio, setPrice] = useState(existingPrecio || '');
+    const [Imagenes, setImages] = useState(existingImagenes || []);
+    const [category, setCategory] = useState(existingCategoria || '');
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        axios.get('/api/categories').then(response => {
+            setCategories(response.data);
+            if (existingCategoria) {
+                setCategory(existingCategoria);
+            }
+        });
+    }, [existingCategoria]);
+
 
     const [isUploading, setIsUploading] = useState(false);
 
@@ -24,8 +43,14 @@ export default function Product() {
         if (isUploading) {
             await Promise.all(uploadImagesQueue)
         }
-        const data = { Título, Descripción, Precio, Imagenes };
-        await axios.post('/api/products', data);
+        const data = { Título, Descripción, Precio, Imagenes, Categoria: category };
+        if (_id) {
+            await axios.put('/api/products', { ...data, _id });
+            toast.success('Producto actualizado!')
+        } else {
+            await axios.post('/api/products', data);
+            toast.success('Producto creado!')
+        }
         setRedirect(true);
     };
 
@@ -60,7 +85,7 @@ export default function Product() {
         setImages(Imagenes);
     }
 
-    function handleDeleteImage(index){
+    function handleDeleteImage(index) {
         const updateImages = [...Imagenes];
         updateImages.splice(index, 1);
         setImages(updateImages);
@@ -81,11 +106,14 @@ export default function Product() {
             <div class="mx-auto max-w-2xl my-4">
                 <div>
                     <label for="example1" class="mb-1 block text-lg font-medium text-gray-700 py-1">Seleccionar Categoria</label>
-                    <select class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3">
+                    <select class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3"
+                        value={category}
+                        onChange={ev => setCategory(ev.target.value)}>
 
                         <option value="">Ninguna categoría seleccionada</option>
-                        <option value="">Option02</option>
-                        <option value="">Option03</option>
+                        {categories.length > 0 && categories.map(category => (
+                            <option key={category._id} value={category._id}>{category.name}</option>
+                        ))}
                     </select>
                 </div>
             </div>
