@@ -1,6 +1,4 @@
 import "@/styles/globals.css";
-import { Main } from "next/document";
-
 import { Poppins } from 'next/font/google'
 import { SessionProvider } from "next-auth/react"
 import Header from "@/components/Header";
