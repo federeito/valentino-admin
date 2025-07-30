@@ -1,4 +1,3 @@
-import Google from "next-auth/providers/google"
 import { signIn, signOut, useSession } from "next-auth/react"
 import Link from "next/link"
 
@@ -75,7 +74,7 @@ export default function Home() {
 
       <button
         className="inline-block rounded-sm border border-blue-600 bg-indigo-600 px-12 py-3 text-md font-medium text-white hover:bg-transparent hover:text-indigo-600 focus:ring-3 focus:outline-hidden"
-        onClick={() => signIn('Google')}
+        onClick={() => signIn('google')}
       >
         Iniciar Sesion con Google
       </button>
