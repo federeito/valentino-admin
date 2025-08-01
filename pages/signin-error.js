@@ -1,7 +1,6 @@
-// pages/auth/signin-error.js
 import { useRouter } from 'next/router';
-import { signIn } from 'next-auth/react'; // Import signIn for the Google login button
-import Link from 'next/link'; // Import Link for the Home button
+import { signIn } from 'next-auth/react'
+import Link from 'next/link'
 
 export default function SignInError() {
   const router = useRouter();
