@@ -12,6 +12,7 @@ export default function Product({
     Precio: existingPrecio,
     Imagenes: existingImagenes,
     Categoria: existingCategoria,
+    stock: existingStock,
 }) {
     const [redirect, setRedirect] = useState(false)
     const router = useRouter();
@@ -22,6 +23,7 @@ export default function Product({
     const [Imagenes, setImages] = useState(existingImagenes || []);
     const [category, setCategory] = useState(existingCategoria || '');
     const [categories, setCategories] = useState([]);
+    const [stock, setStock] = useState(existingStock || 0);
 
     useEffect(() => {
         axios.get('/api/categories').then(response => {
@@ -43,7 +45,7 @@ export default function Product({
         if (isUploading) {
             await Promise.all(uploadImagesQueue)
         }
-        const data = { Título, Descripción, Precio, Imagenes, Categoria: category };
+        const data = { Título, Descripción, Precio, Imagenes, Categoria: category, stock };
         if (_id) {
             await axios.put('/api/products', { ...data, _id });
             toast.success('Producto actualizado!')
@@ -92,7 +94,7 @@ export default function Product({
     }
 
     return <>
-        <form onSubmit={createProduct} classname="mx-auto max-w-screen-sm">
+        <form onSubmit={createProduct} className="mx-auto max-w-screen-sm">
 
             <div class="mx-auto max-w-2xl my-4">
                 <div>
@@ -186,6 +188,20 @@ export default function Product({
                     <input type="number" id="example1" class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3" placeholder="Precio del producto"
                         value={Precio}
                         onChange={ev => setPrice(ev.target.value)}
+                    />
+                </div>
+            </div>
+            <div className="mx-auto max-w-2xl my-4">
+                <div>
+                    <label htmlFor="stockInput" className="mb-1 block text-lg font-medium text-gray-700 py-1">Stock</label>
+                    <input
+                        type="number"
+                        id="stockInput"
+                        className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3"
+                        placeholder="Cantidad de stock"
+                        value={stock}
+                        onChange={ev => setStock(ev.target.value)}
+                        min="0" // Ensures stock cannot be negative
                     />
                 </div>
             </div>
