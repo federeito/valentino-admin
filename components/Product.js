@@ -24,6 +24,7 @@ export default function Product({
     const [category, setCategory] = useState(existingCategoria || '');
     const [categories, setCategories] = useState([]);
     const [stock, setStock] = useState(existingStock || 0);
+    const [formErrors, setFormErrors] = useState({});
 
     useEffect(() => {
         axios.get('/api/categories').then(response => {
@@ -41,6 +42,25 @@ export default function Product({
 
     async function createProduct(ev) {
         ev.preventDefault();
+
+        // 1. Lógica de validación
+        const errors = {};
+        if (!Título) errors.Título = 'El título es requerido.';
+        if (!Descripción) errors.Descripción = 'La descripción es requerida.';
+        if (!Precio) errors.Precio = 'El precio es requerido.';
+        if (stock === null || stock === undefined || stock === '') errors.stock = 'El stock es requerido.';
+        if (Imagenes.length === 0) errors.Imagenes = 'Se requiere al menos una imagen.';
+        if (!category) errors.category = 'La categoría es requerida.';
+
+        // 2. Si hay errores, actualiza el estado y detiene la función
+        if (Object.keys(errors).length > 0) {
+            setFormErrors(errors);
+            toast.error('Por favor, completa todos los campos requeridos.');
+            return;
+        }
+
+        // 3. Si no hay errores, limpia los errores y procede
+        setFormErrors({});
 
         if (isUploading) {
             await Promise.all(uploadImagesQueue)

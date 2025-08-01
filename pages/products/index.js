@@ -58,33 +58,44 @@ export default function Products() {
             <thead class="bg-gray-50">
               <tr>
                 <th scope="col" class="px-6 py-4 font-medium text-gray-900"></th>
+                <th scope="col" class="px-6 py-4 font-medium text-gray-900">Imagen</th>
                 <th scope="col" class="px-6 py-4 font-medium text-gray-900">Nombre</th>
                 <th scope="col" class="px-6 py-4 font-medium text-gray-900">Descripción</th>
                 <th scope="col" class="px-6 py-4 font-medium text-gray-900">Precio</th>
                 <th scope="col" class="px-6 py-4 font-medium text-gray-900">Categoría</th>
                 <th scope="col" className="px-6 py-4 font-medium text-gray-900">Stock</th>
                 <th scope="col" class="px-6 py-4 font-medium text-gray-900"></th>
-                
+
               </tr>
             </thead>
             {products.map((product, index) => (
               <tbody class="divide-y divide-gray-100 border-t border-gray-100" key={product._id}>
                 <tr>
-                  <th class="px-6 py-4 font-medium text-gray-900">{index + 1}</th>
-                  <td class="px-6 py-4">{product.Título}</td>
+                  <td class="px-6 py-4">
+                    {/* Añade esta celda para la imagen */}
+                    {product.Imagenes && product.Imagenes.length > 0 && (
+                      <img
+                        src={product.Imagenes[0]}
+                        alt={product.Título}
+                        className="h-16 w-16 object-cover rounded-md"
+                      />
+                    )}
+                  </td>
+                  <td class="px-6 py-4 font-medium text-gray-900">{product.Título}</td>
                   <td class="px-6 py-4 truncate max-w-xs">{product.Descripción}</td>
                   <td class="px-6 py-4">
                     {formatPrice(product.Precio)}
-                  
                   </td>
                   <td class="px-6 py-4">
-                    {product.Categoria ? product.Categoria.name : 'Uncategorized'} {/* Display category name */}
+                    {product.Categoria ? product.Categoria.name : 'Uncategorized'}
                   </td>
                   <td class="px-6 py-4">
-                    {product.stock > 0 ? product.stock : 'Sin Stock'}</td>
-                  <td class="flex justify-end gap-4 px-6 py-4 font-medium">
+                    {product.stock > 0 ? product.stock : 'Sin Stock'}
+                  </td>
+                  <td class="flex justify-end gap-4 px-6 py-9 font-medium">
                     <Link href={"/products/delete/" + product._id} className="text-red-700">Delete</Link>
-                    <Link href={"/products/edit/" + product._id} class="text-green-700">Edit</Link></td>
+                    <Link href={"/products/edit/" + product._id} class="text-green-700">Edit</Link>
+                  </td>
                 </tr>
               </tbody>
             ))}
