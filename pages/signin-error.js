@@ -27,9 +27,9 @@ export default function SignInError() {
 
         {/* Button to try Google Sign-In again */}
         <button
-          onClick={() => signIn('google')}
+          onClick={() => signIn('google', { prompt: 'select_account' })}
           className="mt-6 inline-block rounded bg-red-500 px-5 py-3 text-sm font-medium text-white hover:bg-gray-400 focus:ring focus:outline-none mr-2"
-          // You might want to adjust the styling (bg-blue-500, etc.) to match your site's theme
+        // You might want to adjust the styling (bg-blue-500, etc.) to match your site's theme
         >
           Intentar de nuevo con Google
         </button>
@@ -38,7 +38,7 @@ export default function SignInError() {
         <Link href="/">
           <button
             className="mt-6 inline-block rounded border border-gray-300 px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:ring focus:outline-none"
-            // You might want to adjust the styling to match your site's theme
+          // You might want to adjust the styling to match your site's theme
           >
             Regresar al Inicio
           </button>
