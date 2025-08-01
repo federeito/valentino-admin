@@ -27,7 +27,7 @@ export default function Header() {
                                 <img
                                     src="https://res.cloudinary.com/djuk4a84p/image/upload/v1754068083/file_1752901313457_c_crop_ar_16_9_kvqmtw.png"
                                     alt="Tu Logo"
-                                    className="h-16 w-auto"
+                                    className="h-14 w-auto"
                                 />
                             </a>
                         </div>
