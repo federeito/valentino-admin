@@ -12,6 +12,7 @@
     "@auth/mongodb-adapter": "^3.10.0",
     "axios": "^1.10.0",
     "cloudinary": "^2.7.0",
+    "date-fns": "^4.1.0",
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.4",
     "multiparty": "^4.2.3",
