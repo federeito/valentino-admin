@@ -54,59 +54,74 @@ export default function Products() {
 
 
         <div className="overflow-x-auto">
-    <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
-        <thead className="bg-gray-50">
-            <tr>
+          <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
+            <thead className="bg-gray-50">
+              <tr>
                 <th scope="col" className="px-6 py-4 font-medium text-gray-900">Imagen</th>
                 <th scope="col" className="px-6 py-4 font-medium text-gray-900">Nombre</th>
                 <th scope="col" className="px-6 py-4 font-medium text-gray-900">Descripción</th>
                 <th scope="col" className="px-6 py-4 font-medium text-gray-900">Precio</th>
                 <th scope="col" className="px-6 py-4 font-medium text-gray-900">Categoría</th>
                 <th scope="col" className="px-6 py-4 font-medium text-gray-900">Stock</th>
+                <th scope="col" className="px-6 py-4 font-medium text-gray-900">Colores</th>
                 <th scope="col" className="px-6 py-4 font-medium text-gray-900"></th>
-            </tr>
-        </thead>
-        <tbody>
-            {products.map((product) => (
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((product) => (
                 <tr className="divide-y divide-gray-100 border-t border-gray-100" key={product._id}>
-                    {/* Celda para la Imagen */}
-                    <td className="px-6 py-4">
-                        {product.Imagenes && product.Imagenes.length > 0 && (
-                            <img
-                                src={product.Imagenes[0]}
-                                alt={product.Título}
-                                className="h-16 w-16 object-cover rounded-md"
-                            />
-                        )}
-                    </td>
+                  {/* Celda para la Imagen */}
+                  <td className="px-6 py-4">
+                    {product.Imagenes && product.Imagenes.length > 0 && (
+                      <img
+                        src={product.Imagenes[0]}
+                        alt={product.Título}
+                        className="h-16 w-16 object-cover rounded-md"
+                      />
+                    )}
+                  </td>
 
-                    {/* Celda para el Nombre */}
-                    <td className="px-6 py-4 font-medium text-gray-900">{product.Título}</td>
+                  {/* Celda para el Nombre */}
+                  <td className="px-6 py-4 font-medium text-gray-900">{product.Título}</td>
 
-                    {/* Celda para la Descripción */}
-                    <td className="px-6 py-4 truncate max-w-xs">{product.Descripción}</td>
+                  {/* Celda para la Descripción */}
+                  <td className="px-6 py-4 truncate max-w-xs">{product.Descripción}</td>
 
-                    {/* Celda para el Precio */}
-                    <td className="px-6 py-4">{formatPrice(product.Precio)}</td>
+                  {/* Celda para el Precio */}
+                  <td className="px-6 py-4">{formatPrice(product.Precio)}</td>
 
-                    {/* Celda para la Categoría */}
-                    <td className="px-6 py-4">
-                        {product.Categoria ? product.Categoria.name : 'Uncategorized'}
-                    </td>
+                  {/* Celda para la Categoría */}
+                  <td className="px-6 py-4">
+                    {product.Categoria ? product.Categoria.name : 'Uncategorized'}
+                  </td>
 
-                    {/* Celda para el Stock */}
-                    <td className="px-6 py-4">
-                        {product.stock > 0 ? product.stock : 'Sin Stock'}
-                    </td>
+                  {/* Celda para el Stock */}
+                  <td className="px-6 py-4">
+                    {product.stock > 0 ? product.stock : 'Sin Stock'}
+                  </td>
 
-                    {/* Celda para las Acciones */}
-                    <td className="flex justify-end gap-4 px-6 py-9 font-medium">
-                        <Link href={"/products/delete/" + product._id} className="text-red-700">Delete</Link>
-                        <Link href={"/products/edit/" + product._id} className="text-green-700">Edit</Link>
+                  {/* Celda para los Colores */}
+                  <td className="px-6 py-4">
+                    <div className="flex gap-1">
+                      {product.colors?.map((color, index) => (
+                        <div
+                          key={index} // It's better to use a unique key if possible, but index is okay here
+                          className="w-6 h-6 rounded-full border border-gray-200"
+                          style={{ backgroundColor: color.code }}
+                          title={color.name}
+                        ></div>
+                      ))}
+                    </div>
+                  </td>
+
+                  {/* Celda para las Acciones */}
+                  <td className="flex justify-end gap-4 px-6 py-9 font-medium">
+                    <Link href={"/products/delete/" + product._id} className="text-red-700">Delete</Link>
+                    <Link href={"/products/edit/" + product._id} className="text-green-700">Edit</Link>
                   </td>
                 </tr>
-                ))}
-              </tbody>
+              ))}
+            </tbody>
           </table>
         </div>
       )}

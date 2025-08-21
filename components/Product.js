@@ -13,6 +13,7 @@ export default function Product({
     Imagenes: existingImagenes,
     Categoria: existingCategoria,
     stock: existingStock,
+    colors: existingColors,
 }) {
     const [redirect, setRedirect] = useState(false)
     const router = useRouter();
@@ -24,6 +25,9 @@ export default function Product({
     const [category, setCategory] = useState(existingCategoria || '');
     const [categories, setCategories] = useState([]);
     const [stock, setStock] = useState(existingStock || 0);
+    const [colors, setColors] = useState(existingColors || []);
+    const [newColorCode, setNewColorCode] = useState('#000000');
+    const [newColorName, setNewColorName] = useState('');
     const [formErrors, setFormErrors] = useState({});
 
     useEffect(() => {
@@ -34,7 +38,6 @@ export default function Product({
             }
         });
     }, [existingCategoria]);
-
 
     const [isUploading, setIsUploading] = useState(false);
 
@@ -65,7 +68,7 @@ export default function Product({
         if (isUploading) {
             await Promise.all(uploadImagesQueue)
         }
-        const data = { Título, Descripción, Precio, Imagenes, Categoria: category, stock };
+        const data = { Título, Descripción, Precio, Imagenes, Categoria: category, stock, colors };
         if (_id) {
             await axios.put('/api/products', { ...data, _id });
             toast.success('Producto actualizado!')
@@ -113,116 +116,143 @@ export default function Product({
         setImages(updateImages);
     }
 
+    function addColor() {
+        if (newColorName && newColorCode) {
+            setColors(prev => [...prev, { name: newColorName, code: newColorCode }]);
+            setNewColorName('');
+            setNewColorCode('#000000');
+        }
+    }
+
+    function removeColor(colorToRemove) {
+        setColors(prev => prev.filter(color => color.code !== colorToRemove.code));
+    }
+
+
     return <>
         <form onSubmit={createProduct} className="mx-auto max-w-screen-sm">
-
             <div class="mx-auto max-w-2xl my-4">
                 <div>
                     <label for="example1" class="mb-1 block text-lg font-medium text-gray-700 py-1">Título</label>
-                    <input type="text" id="example1" class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3" placeholder="Título del producto"
-                        value={Título}
-                        onChange={ev => setTitle(ev.target.value)}
-                    />
+                    <input type="text" id="example1" class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3" placeholder="Título del producto" value={Título} onChange={ev => setTitle(ev.target.value)} />
                 </div>
             </div>
-            <div class="mx-auto max-w-2xl my-4">
-                <div>
-                    <label for="example1" class="mb-1 block text-lg font-medium text-gray-700 py-1">Seleccionar Categoria</label>
-                    <select class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3"
-                        value={category}
-                        onChange={ev => setCategory(ev.target.value)}>
-
-                        <option value="">Ninguna categoría seleccionada</option>
-                        {categories.length > 0 && categories.map(category => (
-                            <option key={category._id} value={category._id}>{category.name}</option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-            <div class="mx-auto max-w-2xl my-4">
-
-                <div class="mx-auto">
-                    <label for="example1" class="mb-1 block text-lg font-medium text-gray-700 py-1">Imagenes</label>
-                    <label class="flex w-full cursor-pointer appearance-none items-center justify-center rounded-md border-2 border-dashed border-blue-300 p-6 transition-all hover:border-primary-300">
-                        <div class="space-y-1 text-center">
-                            <div class="mx-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6 text-gray-500">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
-                                </svg>
-                            </div>
-                            <div class="text-gray-600"><a href="#" class="font-medium text-primary-500 hover:text-primary-700">Click to upload</a> or drag and drop</div>
-                            <p class="text-sm text-gray-500">SVG, PNG, JPG or GIF (max. 800x400px)</p>
-                        </div>
-                        <input id="fileInput" type="file" className="hidden" accept="image/*"
-                            multiple onChange={uploadImages} />
-                    </label>
-                </div>
-            </div>
-
-            <div className="flex justify-center items-center my-4">
-                {isUploading && (
-                    <Spinner className="p-4 absolute top-1/2 left 1/2 transform -translate-x-1/2 -translate-y-1/2" />
-                )}
-            </div>
-
-
-            {!isUploading && (
-                <div className="mx-auto max-w-2xl my-4 flex justify-center">
-                    <ReactSortable
-                        list={Array.isArray(Imagenes) ? Imagenes : []}
-                        setList={updateImagesOrder}
-                        animation={200}
-                        className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 mt-2 w-full"
-                    >
-                        {Array.isArray(Imagenes) && Imagenes.map((link, index) => (
-                            <div key={link} className="relative group flex items-center justify-center h-24 w-24 border border-gray-300 rounded-md overflow-hidden">
-                                <img src={link} alt="image" className="object-cover h-full w-full" />
-                                <div className="absolute top-2 right-2 cursor-pointer group-hover:opacity-100 opacity-0
-                            transition-opacity">
-                                    <button onClick={() => handleDeleteImage(index)}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                        </svg>
-
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </ReactSortable>
-
-                </div>
-            )}
-
             <div class="mx-auto max-w-2xl my-4">
                 <div>
                     <label for="example1" class="mb-1 block text-lg font-medium text-gray-700 py-1">Descripción</label>
-                    <textarea rows={5} type="text" id="example1" class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3" placeholder="Descripcion del producto"
-                        value={Descripción}
-                        onChange={ev => setDescription(ev.target.value)}
-                    />
+                    <textarea class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3" placeholder="Descripción del producto" value={Descripción} onChange={ev => setDescription(ev.target.value)}></textarea>
                 </div>
             </div>
             <div class="mx-auto max-w-2xl my-4">
                 <div>
                     <label for="example1" class="mb-1 block text-lg font-medium text-gray-700 py-1">Precio</label>
-                    <input type="number" id="example1" class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3" placeholder="Precio del producto"
-                        value={Precio}
-                        onChange={ev => setPrice(ev.target.value)}
-                    />
+                    <input type="number" id="example1" class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3" placeholder="Precio del producto" value={Precio} onChange={ev => setPrice(ev.target.value)} />
+                </div>
+            </div>
+            <div class="mx-auto max-w-2xl my-4">
+                <div>
+                    <label for="example1" class="mb-1 block text-lg font-medium text-gray-700 py-1">Categoría</label>
+                    <select
+                        className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3"
+                        value={category}
+                        onChange={ev => setCategory(ev.target.value)}
+                    >
+                        <option value={""}>Sin Categoría</option>
+                        {categories.map(category => (
+                            <option key={category._id} value={category._id}>{category.name}</option>
+                        ))}
+                    </select>
                 </div>
             </div>
             <div className="mx-auto max-w-2xl my-4">
                 <div>
-                    <label htmlFor="stockInput" className="mb-1 block text-lg font-medium text-gray-700 py-1">Stock</label>
+                    <label className="mb-1 block text-lg font-medium text-gray-700 py-1">
+                        Stock
+                    </label>
                     <input
                         type="number"
-                        id="stockInput"
                         className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3"
-                        placeholder="Cantidad de stock"
+                        placeholder="Stock del producto"
                         value={stock}
-                        onChange={ev => setStock(ev.target.value)}
-                        min="0" // Ensures stock cannot be negative
+                        onChange={(ev) => setStock(Number(ev.target.value))}
                     />
+                </div>
+            </div>
+            <div className="mx-auto max-w-2xl my-4">
+                <label className="mb-1 block text-lg font-medium text-gray-700 py-1">
+                    Colores
+                </label>
+                <div className="flex gap-2 mb-2">
+                    <input
+                        type="text"
+                        placeholder="Nombre del Color"
+                        value={newColorName}
+                        onChange={ev => setNewColorName(ev.target.value)}
+                        className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3"
+                    />
+                    <input
+                        type="color"
+                        value={newColorCode}
+                        onChange={ev => setNewColorCode(ev.target.value)}
+                        className="w-12 h-12"
+                    />
+                    <button
+                        type="button"
+                        onClick={addColor}
+                        className="px-4 py-2 bg-gray-200 rounded-md"
+                    >
+                        Agregar
+                    </button>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                    {colors.map((color, index) => (
+                        <div key={index} className="flex items-center gap-1">
+                            <div
+                                onClick={() => removeColor(color)}
+                                className="w-8 h-8 rounded-full cursor-pointer border border-gray-200 flex items-center justify-center"
+                                style={{ backgroundColor: color.code }}
+                                title={color.name}
+                            >
+                                <span className="text-white text-sm opacity-0 hover:opacity-100">×</span>
+                            </div>
+                            <span className="text-sm">{color.name}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+            <div class="mx-auto max-w-2xl my-4">
+                <label className="mb-1 block text-lg font-medium text-gray-700 py-1">Imágenes</label>
+                <div className="mb-2 flex flex-wrap gap-2">
+                    <ReactSortable
+                        list={Imagenes}
+                        setList={updateImagesOrder}
+                        className="flex flex-wrap gap-2"
+                    >
+                        {!!Imagenes?.length && Imagenes.map((link, index) => (
+                            <div key={index} className="relative h-24 bg-white p-4 shadow-sm border border-gray-200 rounded-lg cursor-grab">
+                                <img src={link} alt="product image" className="h-full rounded-lg" />
+                                <button
+                                    type="button"
+                                    onClick={() => handleDeleteImage(index)}
+                                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 leading-none"
+                                >
+                                    &times;
+                                </button>
+                            </div>
+                        ))}
+                    </ReactSortable>
+                    {isUploading && (
+                        <div className="h-24 p-1 flex items-center">
+                            <Spinner />
+                        </div>
+                    )}
+                    <label className="w-24 h-24 cursor-pointer text-center flex flex-col items-center justify-center text-sm gap-1 text-primary rounded-sm bg-white shadow-sm border border-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                        </svg>
+                        <div>Subir</div>
+                        <input type="file" onChange={uploadImages} className="hidden" />
+                    </label>
                 </div>
             </div>
             <div class="mx-auto max-w-2xl my-4">
