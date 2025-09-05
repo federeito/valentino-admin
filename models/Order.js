@@ -9,6 +9,7 @@ const OrderSchema = new Schema({
     address: String,
     country: String,
     paid: Boolean,
+    codigo: String, // Add product code field
 }, {
     timestamps: true, // Adds createdAt and updatedAt fields automatically
 });

@@ -28,11 +28,11 @@ export default function ApprovalsPage() {
         setUsers(data.data || []);
       } else {
         console.error('API error:', data.error);
-        toast.error(data.error || 'Failed to fetch users');
+        toast.error(data.error || 'Error al obtener usuarios');
       }
     } catch (error) {
       console.error('Fetch error:', error);
-      toast.error('Error fetching users: ' + error.message);
+      toast.error('Error al obtener usuarios: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -55,15 +55,15 @@ export default function ApprovalsPage() {
       console.log('Update response:', data);
       
       if (data.success) {
-        toast.success('User updated successfully');
+        toast.success('Usuario actualizado exitosamente');
         fetchUsers(); // Refresh the list
       } else {
         console.error('Update error:', data.error);
-        toast.error(data.error || 'Failed to update user');
+        toast.error(data.error || 'Error al actualizar usuario');
       }
     } catch (error) {
       console.error('Update fetch error:', error);
-      toast.error('Error updating user: ' + error.message);
+      toast.error('Error al actualizar usuario: ' + error.message);
     }
   };
 
@@ -84,13 +84,13 @@ export default function ApprovalsPage() {
       const data = await response.json();
       
       if (data.success) {
-        toast.success('Admin fields initialized successfully');
+        toast.success('Campos de administrador inicializados exitosamente');
         fetchUsers();
       } else {
-        toast.error(data.error || 'Failed to initialize admin fields');
+        toast.error(data.error || 'Error al inicializar campos de administrador');
       }
     } catch (error) {
-      toast.error('Error initializing admin fields: ' + error.message);
+      toast.error('Error al inicializar campos de administrador: ' + error.message);
     }
   };
 
@@ -110,7 +110,7 @@ export default function ApprovalsPage() {
     return (
       <div className="min-h-screen bg-gray-100 p-8">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center">Loading...</div>
+          <div className="text-center">Cargando...</div>
         </div>
       </div>
     );
@@ -120,14 +120,14 @@ export default function ApprovalsPage() {
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">User Approvals</h1>
-          <p className="text-gray-600 mt-2">Manage user registrations and permissions</p>
+          <h1 className="text-3xl font-bold text-gray-900">Aprobaciones de Usuario</h1>
+          <p className="text-gray-600 mt-2">Gestionar registros de usuarios y permisos</p>
         </div>
 
         {/* Debug info */}
         <div className="mb-4 p-4 bg-blue-50 rounded-lg">
           <p className="text-sm text-blue-700">
-            Current filter: <strong>{filter}</strong> | Users found: <strong>{users.length}</strong>
+            Filtro actual: <strong>{filter}</strong> | Usuarios encontrados: <strong>{users.length}</strong>
           </p>
         </div>
 
@@ -141,7 +141,7 @@ export default function ApprovalsPage() {
                 : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
           >
-            All Users
+            Todos los Usuarios
           </button>
           <button
             onClick={() => setFilter('pending')}
@@ -151,7 +151,7 @@ export default function ApprovalsPage() {
                 : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
           >
-            Pending Approval
+            Pendientes de Aprobación
           </button>
           <button
             onClick={() => setFilter('approved')}
@@ -161,7 +161,7 @@ export default function ApprovalsPage() {
                 : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
           >
-            Approved Users
+            Usuarios Aprobados
           </button>
         </div>
 
@@ -171,19 +171,19 @@ export default function ApprovalsPage() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  User Info
+                  Información del Usuario
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Email
+                  Correo Electrónico
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                  Estado
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Price Access
+                  Acceso a Precios
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
+                  Acciones
                 </th>
               </tr>
             </thead>
@@ -216,7 +216,7 @@ export default function ApprovalsPage() {
                             : 'bg-yellow-100 text-yellow-800'
                         }`}
                       >
-                        {user.isApproved ? 'Approved' : 'Pending'}
+                        {user.isApproved ? 'Aprobado' : 'Pendiente'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -228,7 +228,7 @@ export default function ApprovalsPage() {
                             : 'bg-gray-100 text-gray-800'
                         }`}
                       >
-                        {user.canViewPrices ? 'Can View Prices' : 'No Price Access'}
+                        {user.canViewPrices ? 'Puede Ver Precios' : 'Sin Acceso a Precios'}
                       </button>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
@@ -237,7 +237,7 @@ export default function ApprovalsPage() {
                           onClick={() => initializeAdminFields(user._id)}
                           className="text-purple-600 hover:text-purple-900"
                         >
-                          Initialize Admin Fields
+                          Inicializar Campos de Admin
                         </button>
                       ) : !user.isApproved ? (
                         <>
@@ -245,13 +245,13 @@ export default function ApprovalsPage() {
                             onClick={() => handleApprove(user._id)}
                             className="text-green-600 hover:text-green-900"
                           >
-                            Approve
+                            Aprobar
                           </button>
                           <button
                             onClick={() => handleReject(user._id)}
                             className="text-red-600 hover:text-red-900"
                           >
-                            Reject
+                            Rechazar
                           </button>
                         </>
                       ) : (
@@ -259,7 +259,7 @@ export default function ApprovalsPage() {
                           onClick={() => handleReject(user._id)}
                           className="text-red-600 hover:text-red-900"
                         >
-                          Revoke Approval
+                          Revocar Aprobación
                         </button>
                       )}
                     </td>
@@ -271,7 +271,7 @@ export default function ApprovalsPage() {
           
           {users.length === 0 && !loading && (
             <div className="text-center py-8 text-gray-500">
-              No users found for the selected filter.
+              No se encontraron usuarios para el filtro seleccionado.
             </div>
           )}
         </div>

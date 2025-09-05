@@ -9,11 +9,20 @@ const formatPrice = (price) => {
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    axios.get('/api/products').then((response) => {
+  
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get('/api/products');
       setProducts(response.data);
       setLoading(false);
-    })
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
   }, [])
   return <>
     <header>
@@ -59,6 +68,7 @@ export default function Products() {
               <tr>
                 <th scope="col" className="px-6 py-4 font-medium text-gray-900">Imagen</th>
                 <th scope="col" className="px-6 py-4 font-medium text-gray-900">Nombre</th>
+                <th scope="col" className="px-6 py-4 font-medium text-gray-900">Código</th>
                 <th scope="col" className="px-6 py-4 font-medium text-gray-900">Descripción</th>
                 <th scope="col" className="px-6 py-4 font-medium text-gray-900">Precio</th>
                 <th scope="col" className="px-6 py-4 font-medium text-gray-900">Categoría</th>
@@ -83,6 +93,11 @@ export default function Products() {
 
                   {/* Celda para el Nombre */}
                   <td className="px-6 py-4 font-medium text-gray-900">{product.Título}</td>
+
+                  {/* Celda para el Código */}
+                  <td className="px-6 py-4 font-medium text-gray-900">
+                    {product.código || 'Sin código'}
+                  </td>
 
                   {/* Celda para la Descripción */}
                   <td className="px-6 py-4 truncate max-w-xs">{product.Descripción}</td>

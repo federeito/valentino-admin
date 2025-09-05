@@ -14,6 +14,7 @@ export default function Product({
     Categoria: existingCategoria,
     stock: existingStock,
     colors: existingColors,
+    código: existingCódigo,
 }) {
     const [redirect, setRedirect] = useState(false)
     const router = useRouter();
@@ -26,6 +27,7 @@ export default function Product({
     const [categories, setCategories] = useState([]);
     const [stock, setStock] = useState(existingStock || 0);
     const [colors, setColors] = useState(existingColors || []);
+    const [código, setCódigo] = useState(existingCódigo || '');
     const [newColorCode, setNewColorCode] = useState('#000000');
     const [newColorName, setNewColorName] = useState('');
     const [formErrors, setFormErrors] = useState({});
@@ -53,6 +55,10 @@ export default function Product({
         if (!Título) errors.Título = 'El título es requerido.';
         if (!Descripción) errors.Descripción = 'La descripción es requerida.';
         if (!Precio) errors.Precio = 'El precio es requerido.';
+        // Require código only for new products
+        if (!código && !_id) {
+            errors.código = 'El código es requerido para productos nuevos.';
+        }
         if (stock === null || stock === undefined || stock === '') errors.stock = 'El stock es requerido.';
         if (Imagenes.length === 0) errors.Imagenes = 'Se requiere al menos una imagen.';
         if (!category) errors.category = 'La categoría es requerida.';
@@ -70,7 +76,8 @@ export default function Product({
         if (isUploading) {
             await Promise.all(uploadImagesQueue)
         }
-        const data = { Título, Descripción, Precio, Imagenes, Categoria: category, stock, colors };
+        const data = { Título, Descripción, Precio, Imagenes, Categoria: category, stock, colors, código };
+        
         if (_id) {
             await axios.put('/api/products', { ...data, _id });
             toast.success('Producto actualizado!')
@@ -137,6 +144,21 @@ export default function Product({
                 <div>
                     <label for="example1" class="mb-1 block text-lg font-medium text-gray-700 py-1">Título</label>
                     <input type="text" id="example1" class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3" placeholder="Título del producto" value={Título} onChange={ev => setTitle(ev.target.value)} />
+                </div>
+            </div>
+            <div class="mx-auto max-w-2xl my-4">
+                <div>
+                    <label class="mb-1 block text-lg font-medium text-gray-700 py-1">Código del Producto</label>
+                    <input 
+                        type="text" 
+                        class={`block w-full rounded-md border ${formErrors.código ? 'border-red-500' : 'border-gray-300'} shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3`}
+                        placeholder="Código del producto" 
+                        value={código} 
+                        onChange={ev => setCódigo(ev.target.value)} 
+                    />
+                    {formErrors.código && (
+                        <p className="text-red-500 text-sm mt-1">{formErrors.código}</p>
+                    )}
                 </div>
             </div>
             <div class="mx-auto max-w-2xl my-4">

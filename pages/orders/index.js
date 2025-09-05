@@ -72,6 +72,7 @@ const Orders = () => {
                   <thead className="bg-gray-50">
                     <tr>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Unitario</th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
@@ -85,6 +86,7 @@ const Orders = () => {
                         return (
                           <tr key={item.id}>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.title || item.price_data?.product_data?.name}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.codigo || item.price_data?.product_data?.codigo || 'N/A'}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.quantity}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${unitPrice.toFixed(2)}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${subtotal.toFixed(2)}</td>
