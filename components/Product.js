@@ -32,6 +32,17 @@ export default function Product({
     const [newColorName, setNewColorName] = useState('');
     const [formErrors, setFormErrors] = useState({});
 
+    // Add function to check for duplicate product codes
+    const checkDuplicateCode = async (code) => {
+        try {
+            const response = await axios.get(`/api/products/check-code?code=${encodeURIComponent(code)}&excludeId=${_id || ''}`);
+            return response.data.exists;
+        } catch (error) {
+            console.error('Error checking duplicate code:', error);
+            return false;
+        }
+    };
+
     useEffect(() => {
         axios.get('/api/categories').then(response => {
             setCategories(response.data);
@@ -63,10 +74,27 @@ export default function Product({
         if (Imagenes.length === 0) errors.Imagenes = 'Se requiere al menos una imagen.';
         if (!category) errors.category = 'La categoría es requerida.';
 
+        // Check for duplicate product code if código is provided
+        if (código) {
+            try {
+                const isDuplicate = await checkDuplicateCode(código);
+                if (isDuplicate) {
+                    errors.código = 'Este código de producto ya existe. Por favor, usa un código diferente.';
+                }
+            } catch (error) {
+                console.error('Error checking duplicate code:', error);
+                errors.código = 'Error al verificar el código. Inténtalo de nuevo.';
+            }
+        }
+
         // 2. Si hay errores, actualiza el estado y detiene la función
         if (Object.keys(errors).length > 0) {
             setFormErrors(errors);
-            toast.error('Por favor, completa todos los campos requeridos.');
+            if (errors.código && errors.código.includes('ya existe')) {
+                toast.error('Código duplicado: Este código ya está en uso.');
+            } else {
+                toast.error('Por favor, completa todos los campos requeridos.');
+            }
             return;
         }
 
