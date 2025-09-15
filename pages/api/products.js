@@ -10,8 +10,15 @@ export default async function handle(req, res) {
     if (method === 'POST') {
         const { Título, Descripción, Precio, Imagenes, Categoria, stock, colors, código} = req.body;
 
+        // Ensure colors have proper structure with available field
+        const processedColors = colors?.map(color => ({
+            name: color.name,
+            code: color.code,
+            available: color.available !== undefined ? color.available : true
+        })) || [];
+
         const productDoc = await Product.create({
-           Título, Descripción, Precio, Imagenes, Categoria, stock, colors, código
+           Título, Descripción, Precio, Imagenes, Categoria, stock, colors: processedColors, código
         })
         
         res.json(productDoc);
@@ -35,6 +42,13 @@ if (method === 'PUT') {
       Categoria = null;
     }
     
+    // Ensure colors have proper structure with available field
+    const processedColors = colors?.map(color => ({
+        name: color.name,
+        code: color.code,
+        available: color.available !== undefined ? color.available : true
+    })) || [];
+    
     // Prepare update object
     const updateData = {
         Título, 
@@ -43,7 +57,7 @@ if (method === 'PUT') {
         Imagenes, 
         Categoria, 
         stock, 
-        colors
+        colors: processedColors
     };
     
     // Only include código if it has a meaningful value

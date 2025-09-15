@@ -7,7 +7,11 @@ const ProductSchema = new Schema({
     Imagenes: [{type: String}],
     Categoria: {type:mongoose.Schema.Types.ObjectId, ref: 'Category'},
     stock: { type: Number, required: true, default: 0 },
-    colors: [{ name: String, code: String }],
+    colors: [{ 
+        name: String, 
+        code: String, 
+        available: { type: Boolean, default: true }
+    }],
     código: {type: String, required: false},
 });
 

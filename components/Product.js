@@ -32,6 +32,17 @@ export default function Product({
     const [newColorName, setNewColorName] = useState('');
     const [formErrors, setFormErrors] = useState({});
 
+    // Initialize existing colors with available property if missing
+    useEffect(() => {
+        if (existingColors && existingColors.length > 0) {
+            const colorsWithAvailable = existingColors.map(color => ({
+                ...color,
+                available: color.available !== undefined ? color.available : true
+            }));
+            setColors(colorsWithAvailable);
+        }
+    }, [existingColors]);
+
     // Add function to check for duplicate product codes
     const checkDuplicateCode = async (code) => {
         try {
@@ -60,7 +71,7 @@ export default function Product({
 
     async function createProduct(ev) {
         ev.preventDefault();
-
+        
         // 1. Lógica de validación
         const errors = {};
         if (!Título) errors.Título = 'El título es requerido.';
@@ -155,7 +166,11 @@ export default function Product({
 
     function addColor() {
         if (newColorName && newColorCode) {
-            setColors(prev => [...prev, { name: newColorName, code: newColorCode }]);
+            setColors(prev => [...prev, { 
+                name: newColorName, 
+                code: newColorCode, 
+                available: true 
+            }]);
             setNewColorName('');
             setNewColorCode('#000000');
         }
@@ -165,6 +180,13 @@ export default function Product({
         setColors(prev => prev.filter(color => color.code !== colorToRemove.code));
     }
 
+    function toggleColorAvailability(colorCode) {
+        setColors(prev => prev.map(color => 
+            color.code === colorCode 
+                ? { ...color, available: !color.available }
+                : color
+        ));
+    }
 
     return <>
         <form onSubmit={createProduct} className="mx-auto max-w-screen-sm">
@@ -256,18 +278,37 @@ export default function Product({
                         Agregar
                     </button>
                 </div>
-                <div className="flex gap-2 flex-wrap">
+                <div className="grid gap-3">
                     {colors.map((color, index) => (
-                        <div key={index} className="flex items-center gap-1">
+                        <div key={index} className="flex items-center gap-3 p-3 border border-gray-200 rounded-md">
                             <div
-                                onClick={() => removeColor(color)}
-                                className="w-8 h-8 rounded-full cursor-pointer border border-gray-200 flex items-center justify-center"
+                                className="w-8 h-8 rounded-full border border-gray-200"
                                 style={{ backgroundColor: color.code }}
                                 title={color.name}
-                            >
-                                <span className="text-white text-sm opacity-0 hover:opacity-100">×</span>
+                            ></div>
+                            <span className="flex-1 text-sm font-medium">{color.name}</span>
+                            <div className="flex items-center gap-2">
+                                <label className="flex items-center gap-1 text-sm">
+                                    <input
+                                        type="checkbox"
+                                        checked={color.available !== false}
+                                        onChange={() => toggleColorAvailability(color.code)}
+                                        className="rounded"
+                                    />
+                                    Disponible
+                                </label>
+                                {color.available === false && (
+                                    <span className="text-xs text-red-500 bg-red-100 px-2 py-1 rounded">Sin stock</span>
+                                )}
                             </div>
-                            <span className="text-sm">{color.name}</span>
+                            <button
+                                type="button"
+                                onClick={() => removeColor(color)}
+                                className="text-red-500 hover:text-red-700 p-1"
+                                title="Eliminar color"
+                            >
+                                ×
+                            </button>
                         </div>
                     ))}
                 </div>
