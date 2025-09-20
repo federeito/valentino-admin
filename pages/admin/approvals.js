@@ -67,6 +67,35 @@ export default function ApprovalsPage() {
     }
   };
 
+  const deleteUser = async (userId) => {
+    try {
+      console.log('Deleting user:', userId);
+      
+      const response = await fetch('/api/admin/approvals', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      const data = await response.json();
+      
+      console.log('Delete response:', data);
+      
+      if (data.success) {
+        toast.success('Usuario eliminado exitosamente');
+        fetchUsers(); // Refresh the list
+      } else {
+        console.error('Delete error:', data.error);
+        toast.error(data.error || 'Error al eliminar usuario');
+      }
+    } catch (error) {
+      console.error('Delete fetch error:', error);
+      toast.error('Error al eliminar usuario: ' + error.message);
+    }
+  };
+
   const initializeAdminFields = async (userId) => {
     try {
       const response = await fetch('/api/admin/approvals', {
@@ -99,7 +128,9 @@ export default function ApprovalsPage() {
   };
 
   const handleReject = (userId) => {
-    updateUser(userId, { action: 'reject' });
+    if (confirm('¿Estás seguro de que quieres rechazar y eliminar este usuario? Esta acción no se puede deshacer.')) {
+      deleteUser(userId);
+    }
   };
 
   const togglePriceViewing = (userId, currentStatus) => {

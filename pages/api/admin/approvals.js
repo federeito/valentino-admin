@@ -69,8 +69,30 @@ export default async function handler(req, res) {
         }
         break;
 
+      case 'DELETE':
+        try {
+          const { userId } = req.body;
+
+          if (!userId) {
+            return res.status(400).json({ success: false, error: 'User ID is required' });
+          }
+
+          const result = await db.collection('users')
+            .deleteOne({ _id: new ObjectId(userId) });
+
+          if (result.deletedCount === 0) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+          }
+
+          res.status(200).json({ success: true, message: 'User deleted successfully' });
+        } catch (error) {
+          console.error('DELETE /api/admin/approvals error:', error);
+          res.status(500).json({ success: false, error: error.message });
+        }
+        break;
+
       default:
-        res.setHeader('Allow', ['GET', 'PUT']);
+        res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
         res.status(405).end(`Method ${method} Not Allowed`);
     }
   } catch (dbError) {
