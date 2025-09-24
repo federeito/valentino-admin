@@ -8,12 +8,16 @@ const formatPrice = (price) => {
 
 export default function Products() {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(true);
   
   const fetchProducts = async () => {
     try {
       const response = await axios.get('/api/products');
       setProducts(response.data);
+      setFilteredProducts(response.data);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -21,9 +25,36 @@ export default function Products() {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get('/api/categories');
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  const handleCategoryFilter = (categoryId) => {
+    setSelectedCategory(categoryId);
+    if (categoryId === '') {
+      setFilteredProducts(products);
+    } else {
+      const filtered = products.filter(product => 
+        product.Categoria && product.Categoria._id === categoryId
+      );
+      setFilteredProducts(filtered);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
-  }, [])
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    handleCategoryFilter(selectedCategory);
+  }, [products]);
+
   return <>
     <header>
       <div className="mx-auto max-w-screen-2xl px-4 py-6 sm:px-6 sm:py-12 lg:px-8">
@@ -57,8 +88,31 @@ export default function Products() {
     <hr class="my-1 h-px border-0 bg-gray-300" />
 
     <div className="mx-auto max-w-screen-2xl px-4 py-6 sm:px-6 sm:py-12 lg:px-8">
-      {products.length === 0 ? (
-        <p>No hay productos</p>
+      {/* Category Filter */}
+      <div className="mb-6">
+        <label htmlFor="category-filter" className="block text-sm font-medium text-gray-700 mb-2">
+          Filtrar por Categoría
+        </label>
+        <select
+          id="category-filter"
+          value={selectedCategory}
+          onChange={(e) => handleCategoryFilter(e.target.value)}
+          className="block w-48 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+        >
+          <option value="">Todas las categorías</option>
+          {categories.map((category) => (
+            <option key={category._id} value={category._id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+        <p className="mt-1 text-sm text-gray-500">
+          Mostrando {filteredProducts.length} de {products.length} productos
+        </p>
+      </div>
+
+      {filteredProducts.length === 0 ? (
+        <p>No hay productos{selectedCategory ? ' en esta categoría' : ''}</p>
       ) : (
 
 
@@ -78,7 +132,7 @@ export default function Products() {
               </tr>
             </thead>
             <tbody>
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
                 <tr className="divide-y divide-gray-100 border-t border-gray-100" key={product._id}>
                   {/* Celda para la Imagen */}
                   <td className="px-6 py-4">
