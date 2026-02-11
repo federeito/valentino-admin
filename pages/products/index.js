@@ -11,6 +11,7 @@ export default function Products() {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [searchCode, setSearchCode] = useState('');
   const [loading, setLoading] = useState(true);
   
   const fetchProducts = async () => {
@@ -36,14 +37,32 @@ export default function Products() {
 
   const handleCategoryFilter = (categoryId) => {
     setSelectedCategory(categoryId);
-    if (categoryId === '') {
-      setFilteredProducts(products);
-    } else {
-      const filtered = products.filter(product => 
+    applyFilters(categoryId, searchCode);
+  };
+
+  const handleCodeFilter = (code) => {
+    setSearchCode(code);
+    applyFilters(selectedCategory, code);
+  };
+
+  const applyFilters = (categoryId, code) => {
+    let filtered = products;
+
+    // Filtrar por categoría
+    if (categoryId !== '') {
+      filtered = filtered.filter(product => 
         product.Categoria && product.Categoria._id === categoryId
       );
-      setFilteredProducts(filtered);
     }
+
+    // Filtrar por código
+    if (code.trim() !== '') {
+      filtered = filtered.filter(product => 
+        product.código && product.código.toLowerCase().includes(code.toLowerCase())
+      );
+    }
+
+    setFilteredProducts(filtered);
   };
 
   useEffect(() => {
@@ -52,7 +71,7 @@ export default function Products() {
   }, []);
 
   useEffect(() => {
-    handleCategoryFilter(selectedCategory);
+    applyFilters(selectedCategory, searchCode);
   }, [products]);
 
   return <>
@@ -75,7 +94,7 @@ export default function Products() {
               <span className="text-md font-medium"> Crear Productos </span>
 
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1-18 0Z" />
               </svg>
 
             </Link>
@@ -88,31 +107,48 @@ export default function Products() {
     <hr class="my-1 h-px border-0 bg-gray-300" />
 
     <div className="mx-auto max-w-screen-2xl px-4 py-6 sm:px-6 sm:py-12 lg:px-8">
-      {/* Category Filter */}
-      <div className="mb-6">
-        <label htmlFor="category-filter" className="block text-sm font-medium text-gray-700 mb-2">
-          Filtrar por Categoría
-        </label>
-        <select
-          id="category-filter"
-          value={selectedCategory}
-          onChange={(e) => handleCategoryFilter(e.target.value)}
-          className="block w-48 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-        >
-          <option value="">Todas las categorías</option>
-          {categories.map((category) => (
-            <option key={category._id} value={category._id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-        <p className="mt-1 text-sm text-gray-500">
-          Mostrando {filteredProducts.length} de {products.length} productos
-        </p>
+      {/* Category and Code Filters */}
+      <div className="mb-6 flex flex-col sm:flex-row gap-4">
+        <div>
+          <label htmlFor="category-filter" className="block text-sm font-medium text-gray-700 mb-2">
+            Filtrar por Categoría
+          </label>
+          <select
+            id="category-filter"
+            value={selectedCategory}
+            onChange={(e) => handleCategoryFilter(e.target.value)}
+            className="block w-full sm:w-64 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+          >
+            <option value="">Todas las categorías</option>
+            {categories.map((category) => (
+              <option key={category._id} value={category._id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="code-filter" className="block text-sm font-medium text-gray-700 mb-2">
+            Buscar por Código
+          </label>
+          <input
+            id="code-filter"
+            type="text"
+            value={searchCode}
+            onChange={(e) => handleCodeFilter(e.target.value)}
+            placeholder="Ingrese código..."
+            className="block w-full sm:w-64 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+          />
+        </div>
       </div>
 
+      <p className="mb-4 text-sm text-gray-500">
+        Mostrando {filteredProducts.length} de {products.length} productos
+      </p>
+
       {filteredProducts.length === 0 ? (
-        <p>No hay productos{selectedCategory ? ' en esta categoría' : ''}</p>
+        <p>No hay productos{selectedCategory || searchCode ? ' con los filtros seleccionados' : ''}</p>
       ) : (
 
 
