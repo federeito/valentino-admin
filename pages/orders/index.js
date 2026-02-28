@@ -65,6 +65,12 @@ const Orders = () => {
                   <p className="text-gray-600">{order.city}, {order.state} {order.zip}</p>
                   <p className="text-gray-600">{order.country}</p>
                 </div>
+                <div>
+                  <h4 className="font-bold text-gray-700">Información de Pago</h4>
+                  <p className="mt-2 text-gray-600">
+                    <span className="font-medium">Método:</span> {order.paymentMethod || 'No especificado'}
+                  </p>
+                </div>
               </div>
 
               <div className="overflow-x-auto">
@@ -72,6 +78,7 @@ const Orders = () => {
                   <thead className="bg-gray-50">
                     <tr>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Color</th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Unitario</th>
@@ -80,13 +87,14 @@ const Orders = () => {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {order.line_items &&
-                      order.line_items.map((item) => {
+                      order.line_items.map((item, index) => {
                         const unitPrice = (item.unit_price || item.price_data?.unit_amount) / 100;
                         const subtotal = unitPrice * item.quantity;
                         return (
-                          <tr key={item.id}>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.title || item.price_data?.product_data?.name}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.codigo || item.price_data?.product_data?.codigo || 'N/A'}</td>
+                          <tr key={item.id || index}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.originalTitle || item.title || item.price_data?.product_data?.name}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.color?.title || 'N/A'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.código || 'N/A'}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.quantity}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${unitPrice.toFixed(2)}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${subtotal.toFixed(2)}</td>
