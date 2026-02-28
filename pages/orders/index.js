@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-
 const Orders = () => {
   const [orders, setOrders] = useState([]);
 
@@ -23,6 +22,43 @@ const Orders = () => {
       }
       return total;
     }, 0);
+  };
+
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      await axios.put('/api/order', { _id: orderId, status: newStatus });
+      const ordersResponse = await axios.get('/api/order');
+      setOrders(ordersResponse.data);
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('Error al actualizar el estado: ' + error.message);
+    }
+  };
+
+  const handleDeleteOrder = async (orderId) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este pedido?')) {
+      await axios.delete('/api/order?_id=' + orderId);
+      setOrders(orders.filter(order => order._id !== orderId));
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'Pendiente':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Pago confirmado':
+        return 'bg-green-100 text-green-800';
+      case 'En preparación':
+        return 'bg-blue-100 text-blue-800';
+      case 'Despachado':
+        return 'bg-purple-100 text-purple-800';
+      case 'Entregado':
+        return 'bg-teal-100 text-teal-800';
+      case 'Anulado':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
   };
 
   return (
@@ -47,9 +83,29 @@ const Orders = () => {
                   <h3 className="text-lg font-semibold text-gray-800">
                     Total: <span className="text-green-600">${calculateTotal(order.line_items).toFixed(2)}</span>
                   </h3>
-                  <span className={`inline-block mt-2 px-3 py-1 text-xs font-semibold rounded-full ${order.paid ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                    {order.paid ? 'Pagado' : 'Pendiente'}
-                  </span>
+                  <div className="flex items-center gap-2 mt-2 justify-end">
+                    <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${order.paid ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      {order.paid ? 'Pagado' : 'Pendiente'}
+                    </span>
+                    <select
+                      value={order.status || 'Pendiente'}
+                      onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                      className={`px-3 py-1 text-xs font-semibold rounded-full border-0 cursor-pointer ${getStatusColor(order.status || 'Pendiente')}`}
+                    >
+                      <option value="Pendiente">Pendiente</option>
+                      <option value="Pago confirmado">Pago confirmado</option>
+                      <option value="En preparación">En preparación</option>
+                      <option value="Despachado">Despachado</option>
+                      <option value="Entregado">Entregado</option>
+                      <option value="Anulado">Anulado</option>
+                    </select>
+                    <button
+                      onClick={() => handleDeleteOrder(order._id)}
+                      className="px-3 py-1 text-xs font-semibold rounded-full bg-red-500 text-white hover:bg-red-600 transition"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -73,6 +129,24 @@ const Orders = () => {
                 </div>
               </div>
 
+              {order.statusHistory && Array.isArray(order.statusHistory) && order.statusHistory.length > 0 && (
+                <div className="mb-6 bg-gray-50 rounded-lg p-4">
+                  <h4 className="font-bold text-gray-700 mb-3">Historial de Estado</h4>
+                  <div className="space-y-2">
+                    {order.statusHistory.map((historyItem, idx) => (
+                      <div key={idx} className="flex items-center gap-3">
+                        <span className={`inline-block px-2 py-1 text-xs font-semibold rounded ${getStatusColor(historyItem.status)}`}>
+                          {historyItem.status}
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          {format(new Date(historyItem.timestamp), 'PPPPpp', { locale: es })}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 rounded-lg">
                   <thead className="bg-gray-50">
@@ -93,7 +167,7 @@ const Orders = () => {
                         return (
                           <tr key={item.id || index}>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.originalTitle || item.title || item.price_data?.product_data?.name}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.color?.title || 'N/A'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.color?.name || 'N/A'}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.código || 'N/A'}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.quantity}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${unitPrice.toFixed(2)}</td>

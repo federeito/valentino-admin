@@ -10,6 +10,13 @@ const OrderSchema = new Schema({
     country: String,
     paid: Boolean,
     codigo: String, // Add product code field
+    status: String,
+    paymentMethod: String,
+    state: String,
+    statusHistory: [{
+        status: String,
+        timestamp: Date
+    }]
 }, {
     timestamps: true, // Adds createdAt and updatedAt fields automatically
 });
