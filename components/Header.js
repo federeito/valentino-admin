@@ -49,10 +49,11 @@ export default function Header() {
                                         <Link className={location.pathname === '/Pedidos' ? active : inactive} href="/orders"> Pedidos </Link>
                                     </li>
                                     <li>
+                                        <Link className={location.pathname === '/admin/clients' ? active : inactive} href="/admin/clients"> Clientes </Link>
+                                    </li>
+                                    <li>
                                         <Link className={location.pathname === '/Configuracion' ? active : inactive} href="/settings"> Configuracion </Link>
                                     </li>
-
-
                                 </ul>
                             </nav>
 
