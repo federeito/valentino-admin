@@ -1,10 +1,12 @@
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { useRouter } from "next/router"
+import { useState } from "react"
 
 export default function Header() {
 
     const { data: session } = useSession()
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     const router = useRouter();
     const { pathname } = router;
@@ -66,6 +68,7 @@ export default function Header() {
 
                                 <div className="block md:hidden">
                                     <button
+                                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                                         className="rounded-sm bg-gray-100 p-2 text-gray-600 transition hover:text-gray-600/75"
                                     >
                                         <svg
@@ -84,6 +87,34 @@ export default function Header() {
                         </div>
                     </div>
                 </div>
+                
+                {/* Mobile Menu */}
+                {mobileMenuOpen && (
+                    <div className="md:hidden border-t">
+                        <nav className="px-4 py-2">
+                            <ul className="flex flex-col gap-2">
+                                <li>
+                                    <Link className={pathname === '/' ? active : inactive} href="/" onClick={() => setMobileMenuOpen(false)}> Dashboard </Link>
+                                </li>
+                                <li>
+                                    <Link className={pathname === '/products' ? active : inactive} href="/products" onClick={() => setMobileMenuOpen(false)}> Productos </Link>
+                                </li>
+                                <li>
+                                    <Link className={pathname === '/categories' ? active : inactive} href="/categories" onClick={() => setMobileMenuOpen(false)}> Categorias </Link>
+                                </li>
+                                <li>
+                                    <Link className={pathname === '/orders' ? active : inactive} href="/orders" onClick={() => setMobileMenuOpen(false)}> Pedidos </Link>
+                                </li>
+                                <li>
+                                    <Link className={pathname === '/admin/clients' ? active : inactive} href="/admin/clients" onClick={() => setMobileMenuOpen(false)}> Clientes </Link>
+                                </li>
+                                <li>
+                                    <Link className={pathname === '/settings' ? active : inactive} href="/settings" onClick={() => setMobileMenuOpen(false)}> Configuracion </Link>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                )}
             </header>
         </>
     }
