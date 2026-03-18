@@ -17,21 +17,15 @@ export default function ApprovalsPage() {
         ? '/api/admin/approvals' 
         : `/api/admin/users${filter !== 'all' ? `?status=${filter}` : ''}`;
       
-      console.log('Fetching from endpoint:', endpoint);
-      
       const response = await fetch(endpoint);
       const data = await response.json();
-      
-      console.log('API response:', data);
       
       if (data.success) {
         setUsers(data.data || []);
       } else {
-        console.error('API error:', data.error);
         toast.error(data.error || 'Error al obtener usuarios');
       }
     } catch (error) {
-      console.error('Fetch error:', error);
       toast.error('Error al obtener usuarios: ' + error.message);
     } finally {
       setLoading(false);
@@ -40,8 +34,6 @@ export default function ApprovalsPage() {
 
   const updateUser = async (userId, updateData) => {
     try {
-      console.log('Updating user:', userId, updateData);
-      
       const response = await fetch('/api/admin/approvals', {
         method: 'PUT',
         headers: {
@@ -52,25 +44,19 @@ export default function ApprovalsPage() {
 
       const data = await response.json();
       
-      console.log('Update response:', data);
-      
       if (data.success) {
         toast.success('Usuario actualizado exitosamente');
-        fetchUsers(); // Refresh the list
+        fetchUsers();
       } else {
-        console.error('Update error:', data.error);
         toast.error(data.error || 'Error al actualizar usuario');
       }
     } catch (error) {
-      console.error('Update fetch error:', error);
       toast.error('Error al actualizar usuario: ' + error.message);
     }
   };
 
   const deleteUser = async (userId) => {
     try {
-      console.log('Deleting user:', userId);
-      
       const response = await fetch('/api/admin/approvals', {
         method: 'DELETE',
         headers: {
@@ -81,17 +67,13 @@ export default function ApprovalsPage() {
 
       const data = await response.json();
       
-      console.log('Delete response:', data);
-      
       if (data.success) {
         toast.success('Usuario eliminado exitosamente');
-        fetchUsers(); // Refresh the list
+        fetchUsers();
       } else {
-        console.error('Delete error:', data.error);
         toast.error(data.error || 'Error al eliminar usuario');
       }
     } catch (error) {
-      console.error('Delete fetch error:', error);
       toast.error('Error al eliminar usuario: ' + error.message);
     }
   };
@@ -123,8 +105,39 @@ export default function ApprovalsPage() {
     }
   };
 
-  const handleApprove = (userId) => {
-    updateUser(userId, { action: 'approve' });
+  const handleApprove = async (userId) => {
+    try {
+      const user = users.find(u => u._id === userId);
+      
+      await updateUser(userId, { action: 'approve' });
+      
+      if (user) {
+        try {
+          const emailResponse = await fetch('/api/admin/send-approval-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userName: user.name || 'Usuario',
+              userEmail: user.email,
+            }),
+          });
+
+          const emailData = await emailResponse.json();
+          
+          if (emailData.success) {
+            toast.success('Usuario aprobado y email de bienvenida enviado');
+          } else {
+            toast.success('Usuario aprobado (pero el email de bienvenida falló)');
+          }
+        } catch (emailError) {
+          toast.success('Usuario aprobado (pero el email de bienvenida falló)');
+        }
+      }
+    } catch (error) {
+      toast.error('Error al aprobar usuario');
+    }
   };
 
   const handleReject = (userId) => {
@@ -153,13 +166,6 @@ export default function ApprovalsPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Aprobaciones de Usuario</h1>
           <p className="text-gray-600 mt-2">Gestionar registros de usuarios y permisos</p>
-        </div>
-
-        {/* Debug info */}
-        <div className="mb-4 p-4 bg-blue-50 rounded-lg">
-          <p className="text-sm text-blue-700">
-            Filtro actual: <strong>{filter}</strong> | Usuarios encontrados: <strong>{users.length}</strong>
-          </p>
         </div>
 
         {/* Filter buttons */}
