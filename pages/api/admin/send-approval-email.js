@@ -44,8 +44,8 @@ export default async function handler(req, res) {
             <body>
                 <div class="container">
                     <div class="header">
-                        <img src="https://res.cloudinary.com/djuk4a84p/image/upload/v1755574026/valentino_logo_g5zdfg.png" alt="Valentino Paris Logo" class="logo"/>
-                        <h1 style="color: #dc2626; margin: 10px 0 0 0;">¡Bienvenido a Valentino Paris | Accesorios!</h1>
+                        <img src="https://res.cloudinary.com/djuk4a84p/image/upload/v1778687241/soledadlogoaccs_cpclqs.png" alt="Soledad Accesorios Logo" class="logo"/>
+                        <h1 style="color: #dc2626; margin: 10px 0 0 0;">¡Bienvenido a Soledad | Accesorios!</h1>
                     </div>
                     
                     <div class="content">
@@ -68,7 +68,7 @@ export default async function handler(req, res) {
                             <p>Estamos comprometidos a brindarte el mejor servicio y los mejores productos para tu negocio.</p>
                             
                             <center>
-                                <a href="${process.env.NEXTAUTH_URL || 'https://www.valentinoaccesorios.com.ar'}" class="cta-button" style="color: #ffffff !important;">
+                                <a href="${process.env.NEXTAUTH_URL || 'https://www.soledadaccesorios.com.ar'}" class="cta-button" style="color: #ffffff !important;">
                                     Comenzar a Comprar
                                 </a>
                             </center>
@@ -76,9 +76,9 @@ export default async function handler(req, res) {
                     </div>
                     
                     <div class="footer">
-                        <p><strong>Valentino Paris - Accesorios para el pelo</strong></p>
+                        <p><strong>Soledad - Accesorios para el pelo</strong></p>
                         <p>Si tienes alguna pregunta, no dudes en contactarnos.</p>
-                        <p>Email: contacto@valentinoaccesorios.com.ar</p>
+                        <p>Email: contacto@soledadaccesorios.com.ar</p>
                     </div>
                 </div>
             </body>
@@ -86,9 +86,9 @@ export default async function handler(req, res) {
         `;
 
         const mailOptions = {
-            from: `"${process.env.MAILERSEND_FROM_APPROVAL_NAME || 'Valentino Paris'}" <${process.env.MAILERSEND_FROM_EMAIL_APPROVAL}>`,
+            from: `"${process.env.MAILERSEND_FROM_APPROVAL_NAME || 'Soledad | Accesorios'}" <${process.env.MAILERSEND_FROM_EMAIL_APPROVAL}>`,
             to: userEmail,
-            subject: '🎉 ¡Tu cuenta ha sido aprobada! - Valentino Paris',
+            subject: '🎉 ¡Tu cuenta ha sido aprobada! - Soledad | Accesorios',
             html: htmlContent,
         };
 

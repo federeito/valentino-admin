@@ -76,7 +76,7 @@ export default function Settings() {
                 <div className="bg-white rounded-xl shadow p-6 max-w-2xl">
                     <h2 className="text-xl font-semibold mb-1">Enviar Email a Clientes</h2>
                     <p className="text-sm text-gray-500 mb-4">
-                        Desde: <span className="font-medium">contacto@valentinoaccesorios.com.ar</span>
+                        Desde: <span className="font-medium">contacto@soledadaccesorios.com.ar</span>
                     </p>
                     <form onSubmit={handleSendEmail} className="flex flex-col gap-4">
                         <div>
